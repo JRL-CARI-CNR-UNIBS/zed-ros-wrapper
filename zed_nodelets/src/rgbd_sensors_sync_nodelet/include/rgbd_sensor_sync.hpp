@@ -37,7 +37,7 @@
 #include <image_transport/image_transport.h>
 #include <image_transport/subscriber_filter.h>
 
-#include "zed_interfaces/RGBDSensors.h"
+#include "zed_msgs/RGBDSensors.h"
 
 namespace zed_nodelets
 {

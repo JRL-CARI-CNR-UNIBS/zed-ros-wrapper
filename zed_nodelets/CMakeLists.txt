@@ -56,7 +56,7 @@ find_package(catkin REQUIRED COMPONENTS
     message_generation
     diagnostic_updater    
     dynamic_reconfigure
-    zed_interfaces
+    zed_msgs
 )
 
 generate_dynamic_reconfigure_options(
@@ -75,7 +75,7 @@ catkin_package(
     tf2_ros
     tf2_geometry_msgs
     message_runtime    
-    zed_interfaces
+    zed_msgs
     geometry_msgs
     visualization_msgs
 )

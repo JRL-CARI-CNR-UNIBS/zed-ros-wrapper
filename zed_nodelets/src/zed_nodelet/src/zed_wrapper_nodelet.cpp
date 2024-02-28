@@ -30,10 +30,10 @@
 #include <ros/console.h>
 #endif
 
-#include <zed_interfaces/Object.h>
-#include <zed_interfaces/ObjectsStamped.h>
-#include <zed_interfaces/PlaneStamped.h>
-#include <zed_interfaces/PosTrackStatus.h>
+#include <zed_msgs/Object.h>
+#include <zed_msgs/ObjectsStamped.h>
+#include <zed_msgs/PlaneStamped.h>
+#include <zed_msgs/PosTrackStatus.h>
 
 //#define DEBUG_SENS_TS 1
 
@@ -492,7 +492,7 @@ void ZEDWrapperNodelet::onInit()
   NODELET_INFO_STREAM(" * Advertised on topic " << mPubRawStereo.getTopic());
 
   // Detected planes publisher
-  mPubPlane = mNhNs.advertise<zed_interfaces::PlaneStamped>(plane_topic, 1);
+  mPubPlane = mNhNs.advertise<zed_msgs::PlaneStamped>(plane_topic, 1);
 
   if (!mDepthDisabled)
   {
@@ -521,7 +521,7 @@ void ZEDWrapperNodelet::onInit()
     // Object detection publishers
     if (mObjDetEnabled)
     {
-      mPubObjDet = mNhNs.advertise<zed_interfaces::ObjectsStamped>(object_det_topic, 1);
+      mPubObjDet = mNhNs.advertise<zed_msgs::ObjectsStamped>(object_det_topic, 1);
       NODELET_INFO_STREAM(" * Advertised on topic " << mPubObjDet.getTopic());
     }
 
@@ -534,9 +534,9 @@ void ZEDWrapperNodelet::onInit()
     mPubOdom = mNhNs.advertise<nav_msgs::Odometry>(odometryTopic, 1);
     NODELET_INFO_STREAM(" * Advertised on topic " << mPubOdom.getTopic());
 
-    mPubOdomStatus = mNhNs.advertise<zed_interfaces::PosTrackStatus>(odomStatusTopic, 1);
+    mPubOdomStatus = mNhNs.advertise<zed_msgs::PosTrackStatus>(odomStatusTopic, 1);
     NODELET_INFO_STREAM(" * Advertised on topic " << mPubOdomStatus.getTopic());
-    mPubPoseStatus = mNhNs.advertise<zed_interfaces::PosTrackStatus>(poseStatusTopic, 1);
+    mPubPoseStatus = mNhNs.advertise<zed_msgs::PosTrackStatus>(poseStatusTopic, 1);
     NODELET_INFO_STREAM(" * Advertised on topic " << mPubPoseStatus.getTopic());
 
     // Rviz markers publisher
@@ -1466,7 +1466,7 @@ void ZEDWrapperNodelet::checkResolFps()
         {
           NODELET_WARN_STREAM("Wrong FrameRate (" << mCamFrameRate << ") for the resolution HD1080. Forced to 15 FPS.");
           mCamFrameRate = 15;
-        } 
+        }
         else if (mCamFrameRate >= 23 && mCamFrameRate < 45)
         {
           NODELET_WARN_STREAM("Wrong FrameRate (" << mCamFrameRate << ") for the resolution HD1080. Forced to 30 FPS.");
@@ -1509,7 +1509,7 @@ void ZEDWrapperNodelet::checkResolFps()
       {
         NODELET_WARN_STREAM("Wrong FrameRate (" << mCamFrameRate << ") for the resolution HD1080. Forced to 15 FPS.");
         mCamFrameRate = 15;
-      } 
+      }
       else if (mCamFrameRate >= 23 && mCamFrameRate < 45)
       {
         NODELET_WARN_STREAM("Wrong FrameRate (" << mCamFrameRate << ") for the resolution HD1080. Forced to 30 FPS.");
@@ -1586,7 +1586,7 @@ void ZEDWrapperNodelet::checkResolFps()
       {
         NODELET_WARN_STREAM("Wrong FrameRate (" << mCamFrameRate << ") for the resolution HD1080. Forced to 15 FPS.");
         mCamFrameRate = 15;
-      } 
+      }
       else if (mCamFrameRate >= 23 && mCamFrameRate < 45)
       {
         NODELET_WARN_STREAM("Wrong FrameRate (" << mCamFrameRate << ") for the resolution HD1080. Forced to 30 FPS.");
@@ -1833,7 +1833,7 @@ bool ZEDWrapperNodelet::set_pose(float xt, float yt, float zt, float rr, float p
   return (mSensor2BaseTransfValid & mSensor2CameraTransfValid & mCamera2BaseTransfValid);
 }
 
-bool ZEDWrapperNodelet::on_set_pose(zed_interfaces::set_pose::Request& req, zed_interfaces::set_pose::Response& res)
+bool ZEDWrapperNodelet::on_set_pose(zed_msgs::set_pose::Request& req, zed_msgs::set_pose::Response& res)
 {
   mInitialBasePose.resize(6);
   mInitialBasePose[0] = req.x;
@@ -1852,8 +1852,8 @@ bool ZEDWrapperNodelet::on_set_pose(zed_interfaces::set_pose::Request& req, zed_
   return true;
 }
 
-bool ZEDWrapperNodelet::on_reset_tracking(zed_interfaces::reset_tracking::Request& req,
-                                          zed_interfaces::reset_tracking::Response& res)
+bool ZEDWrapperNodelet::on_reset_tracking(zed_msgs::reset_tracking::Request& req,
+                                          zed_msgs::reset_tracking::Response& res)
 {
   if (!mPosTrackingStarted)
   {
@@ -1870,8 +1870,8 @@ bool ZEDWrapperNodelet::on_reset_tracking(zed_interfaces::reset_tracking::Reques
   return true;
 }
 
-bool ZEDWrapperNodelet::on_reset_odometry(zed_interfaces::reset_odometry::Request& req,
-                                          zed_interfaces::reset_odometry::Response& res)
+bool ZEDWrapperNodelet::on_reset_odometry(zed_msgs::reset_odometry::Request& req,
+                                          zed_msgs::reset_odometry::Response& res)
 {
   std::lock_guard<std::mutex> lock(mOdomMutex);
   mOdom2BaseTransf.setIdentity();
@@ -2063,7 +2063,7 @@ bool ZEDWrapperNodelet::start_obj_detect()
     std::string object_det_topic_root = "obj_det";
     std::string object_det_topic = object_det_topic_root + "/objects";
 
-    mPubObjDet = mNhNs.advertise<zed_interfaces::ObjectsStamped>(object_det_topic, 1);
+    mPubObjDet = mNhNs.advertise<zed_msgs::ObjectsStamped>(object_det_topic, 1);
     NODELET_INFO_STREAM(" * Advertised on topic " << mPubObjDet.getTopic());
   }
 
@@ -2082,7 +2082,7 @@ void ZEDWrapperNodelet::stop_obj_detect()
 
     // ----> Send an empty message to indicate that no more objects are tracked
     // (e.g clean Rviz2)
-    zed_interfaces::ObjectsStampedPtr objMsg = boost::make_shared<zed_interfaces::ObjectsStamped>();
+    zed_msgs::ObjectsStampedPtr objMsg = boost::make_shared<zed_msgs::ObjectsStamped>();
 
     objMsg->header.stamp = mFrameTimestamp;
     objMsg->header.frame_id = mLeftCamFrameId;
@@ -2191,8 +2191,8 @@ void ZEDWrapperNodelet::start_pos_tracking()
   }
 }
 
-bool ZEDWrapperNodelet::on_save_area_memory(zed_interfaces::save_area_memory::Request& req,
-                                            zed_interfaces::save_area_memory::Response& res)
+bool ZEDWrapperNodelet::on_save_area_memory(zed_msgs::save_area_memory::Request& req,
+                                            zed_msgs::save_area_memory::Response& res)
 {
   std::string file_path = sl_tools::resolveFilePath(req.area_memory_filename);
 
@@ -4654,8 +4654,8 @@ void ZEDWrapperNodelet::callback_updateDiagnostic(diagnostic_updater::Diagnostic
   }
 }
 
-bool ZEDWrapperNodelet::on_start_svo_recording(zed_interfaces::start_svo_recording::Request& req,
-                                               zed_interfaces::start_svo_recording::Response& res)
+bool ZEDWrapperNodelet::on_start_svo_recording(zed_msgs::start_svo_recording::Request& req,
+                                               zed_msgs::start_svo_recording::Response& res)
 {
   std::lock_guard<std::mutex> lock(mRecMutex);
 
@@ -4725,8 +4725,8 @@ bool ZEDWrapperNodelet::on_start_svo_recording(zed_interfaces::start_svo_recordi
   return true;
 }
 
-bool ZEDWrapperNodelet::on_stop_svo_recording(zed_interfaces::stop_svo_recording::Request& req,
-                                              zed_interfaces::stop_svo_recording::Response& res)
+bool ZEDWrapperNodelet::on_stop_svo_recording(zed_msgs::stop_svo_recording::Request& req,
+                                              zed_msgs::stop_svo_recording::Response& res)
 {
   std::lock_guard<std::mutex> lock(mRecMutex);
 
@@ -4748,8 +4748,8 @@ bool ZEDWrapperNodelet::on_stop_svo_recording(zed_interfaces::stop_svo_recording
   return true;
 }
 
-bool ZEDWrapperNodelet::on_start_remote_stream(zed_interfaces::start_remote_stream::Request& req,
-                                               zed_interfaces::start_remote_stream::Response& res)
+bool ZEDWrapperNodelet::on_start_remote_stream(zed_msgs::start_remote_stream::Request& req,
+                                               zed_msgs::start_remote_stream::Response& res)
 {
   if (mStreaming)
   {
@@ -4812,8 +4812,8 @@ bool ZEDWrapperNodelet::on_start_remote_stream(zed_interfaces::start_remote_stre
   return true;
 }
 
-bool ZEDWrapperNodelet::on_stop_remote_stream(zed_interfaces::stop_remote_stream::Request& req,
-                                              zed_interfaces::stop_remote_stream::Response& res)
+bool ZEDWrapperNodelet::on_stop_remote_stream(zed_msgs::stop_remote_stream::Request& req,
+                                              zed_msgs::stop_remote_stream::Response& res)
 {
   if (mStreaming)
   {
@@ -4827,8 +4827,8 @@ bool ZEDWrapperNodelet::on_stop_remote_stream(zed_interfaces::stop_remote_stream
   return true;
 }
 
-bool ZEDWrapperNodelet::on_set_led_status(zed_interfaces::set_led_status::Request& req,
-                                          zed_interfaces::set_led_status::Response& res)
+bool ZEDWrapperNodelet::on_set_led_status(zed_msgs::set_led_status::Request& req,
+                                          zed_msgs::set_led_status::Response& res)
 {
   if (mCamFwVersion < 1523)
   {
@@ -4841,8 +4841,8 @@ bool ZEDWrapperNodelet::on_set_led_status(zed_interfaces::set_led_status::Reques
   return true;
 }
 
-bool ZEDWrapperNodelet::on_toggle_led(zed_interfaces::toggle_led::Request& req,
-                                      zed_interfaces::toggle_led::Response& res)
+bool ZEDWrapperNodelet::on_toggle_led(zed_msgs::toggle_led::Request& req,
+                                      zed_msgs::toggle_led::Response& res)
 {
   if (mCamFwVersion < 1523)
   {
@@ -4871,7 +4871,7 @@ bool ZEDWrapperNodelet::on_toggle_led(zed_interfaces::toggle_led::Request& req,
   return true;
 }
 
-bool ZEDWrapperNodelet::on_set_roi(zed_interfaces::set_roi::Request& req, zed_interfaces::set_roi::Response& res)
+bool ZEDWrapperNodelet::on_set_roi(zed_msgs::set_roi::Request& req, zed_msgs::set_roi::Response& res)
 {
   NODELET_INFO("** Set ROI service called **");
   NODELET_INFO_STREAM(" * ROI string: " << req.roi.c_str());
@@ -4949,7 +4949,7 @@ bool ZEDWrapperNodelet::on_set_roi(zed_interfaces::set_roi::Request& req, zed_in
   // <---- Set Region of Interest
 }
 
-bool ZEDWrapperNodelet::on_reset_roi(zed_interfaces::reset_roi::Request& req, zed_interfaces::reset_roi::Response& res)
+bool ZEDWrapperNodelet::on_reset_roi(zed_msgs::reset_roi::Request& req, zed_msgs::reset_roi::Response& res)
 {
   NODELET_INFO("** Reset ROI service called **");
 
@@ -4972,8 +4972,8 @@ bool ZEDWrapperNodelet::on_reset_roi(zed_interfaces::reset_roi::Request& req, ze
   }
 }
 
-bool ZEDWrapperNodelet::on_start_3d_mapping(zed_interfaces::start_3d_mapping::Request& req,
-                                            zed_interfaces::start_3d_mapping::Response& res)
+bool ZEDWrapperNodelet::on_start_3d_mapping(zed_msgs::start_3d_mapping::Request& req,
+                                            zed_msgs::start_3d_mapping::Response& res)
 {
   if (mMappingEnabled && mMappingRunning)
   {
@@ -4999,8 +4999,8 @@ bool ZEDWrapperNodelet::on_start_3d_mapping(zed_interfaces::start_3d_mapping::Re
   return res.done;
 }
 
-bool ZEDWrapperNodelet::on_stop_3d_mapping(zed_interfaces::stop_3d_mapping::Request& req,
-                                           zed_interfaces::stop_3d_mapping::Response& res)
+bool ZEDWrapperNodelet::on_stop_3d_mapping(zed_msgs::stop_3d_mapping::Request& req,
+                                           zed_msgs::stop_3d_mapping::Response& res)
 {
   if (mMappingEnabled)
   {
@@ -5019,8 +5019,8 @@ bool ZEDWrapperNodelet::on_stop_3d_mapping(zed_interfaces::stop_3d_mapping::Requ
   return res.done;
 }
 
-bool ZEDWrapperNodelet::on_save_3d_map(zed_interfaces::save_3d_map::Request& req,
-                                       zed_interfaces::save_3d_map::Response& res)
+bool ZEDWrapperNodelet::on_save_3d_map(zed_msgs::save_3d_map::Request& req,
+                                       zed_msgs::save_3d_map::Response& res)
 {
   if (!mMappingEnabled)
   {
@@ -5157,7 +5157,7 @@ void ZEDWrapperNodelet::processDetectedObjects(ros::Time t)
 
   size_t objCount = objects.object_list.size();
 
-  zed_interfaces::ObjectsStampedPtr objMsg = boost::make_shared<zed_interfaces::ObjectsStamped>();
+  zed_msgs::ObjectsStampedPtr objMsg = boost::make_shared<zed_msgs::ObjectsStamped>();
   objMsg->header.stamp = t;
   objMsg->header.frame_id = mLeftCamFrameId;
 
@@ -5412,7 +5412,7 @@ void ZEDWrapperNodelet::clickedPtCallback(geometry_msgs::PointStampedConstPtr ms
   {
     // ----> Publish the plane as custom message
 
-    zed_interfaces::PlaneStampedPtr planeMsg = boost::make_shared<zed_interfaces::PlaneStamped>();
+    zed_msgs::PlaneStampedPtr planeMsg = boost::make_shared<zed_msgs::PlaneStamped>();
     planeMsg->header.stamp = ts;
     planeMsg->header.frame_id = mLeftCamFrameId;
 
@@ -5493,7 +5493,7 @@ void ZEDWrapperNodelet::publishPoseStatus()
 
   if (statusSub > 0)
   {
-    zed_interfaces::PosTrackStatusPtr msg = boost::make_shared<zed_interfaces::PosTrackStatus>();
+    zed_msgs::PosTrackStatusPtr msg = boost::make_shared<zed_msgs::PosTrackStatus>();
     msg->status = static_cast<uint8_t>(mPosTrackingStatusWorld);
 
     mPubPoseStatus.publish(msg);
@@ -5506,7 +5506,7 @@ void ZEDWrapperNodelet::publishOdomStatus()
 
   if (statusSub > 0)
   {
-    zed_interfaces::PosTrackStatusPtr msg = boost::make_shared<zed_interfaces::PosTrackStatus>();
+    zed_msgs::PosTrackStatusPtr msg = boost::make_shared<zed_msgs::PosTrackStatus>();
     msg->status = static_cast<uint8_t>(mPosTrackingStatusCamera);
 
     mPubPoseStatus.publish(msg);
